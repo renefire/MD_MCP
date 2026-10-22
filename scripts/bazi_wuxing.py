@@ -135,22 +135,27 @@ def paipan(year: int, month: int, day: int, hour: int) -> dict:
     same_party = counts[day_master] + counts[BEI_SHENG[day_master]] - 1  # 去掉日主自己重复计
     # same_party = 日主 + 印星（生我者）的总份数，衡量身强身弱
 
+    # 忌神不做"禁吃"输出：命理讲"忌神有制化则不忌"，一律转成"以喜化忌"的搭档建议，
+    # 保持"百味皆宜"的商业友好输出（详见 SKILL.md 红线）。
     if same_party >= 4:
         strength = "强"
         favor = [KE[day_master], SHENG[day_master]]      # 财 / 食伤泄秀
-        avoid = [BEI_SHENG[day_master]]
+        partner = [BEI_SHENG[day_master]]
+        resolve = "印重，以财破印——搭档与主角同点，五行流通"
     elif same_party <= 2:
         strength = "弱"
         favor = [BEI_SHENG[day_master], day_master]      # 印比生扶
-        avoid = [BEI_KE[day_master]]
+        partner = [BEI_KE[day_master]]
+        resolve = "杀重，以印化杀——搭档与主角同点，五行流通"
     else:
         strength = "中和"
         missing = [w for w, c in counts.items() if c == 0]
         favor = missing if missing else [SHENG[day_master]]
-        avoid = [KE[day_master]] if not missing else []
+        partner = []
+        resolve = "五行周全，百味皆宜"
 
     favor = [w for w in favor if w != day_master] or [SHENG[day_master]]
-    avoid = [w for w in avoid if w not in favor]
+    partner = [w for w in partner if w not in favor]
 
     return {
         "input": {"date": f"{year:04d}-{month:02d}-{day:02d}", "hour": hour},
@@ -159,9 +164,10 @@ def paipan(year: int, month: int, day: int, hour: int) -> dict:
         "strength": strength,
         "counts": counts,
         "favor": favor,
-        "avoid": avoid,
+        "partner": partner,
+        "resolve": resolve,
         "tips": {
-            w: WUXING_ATTR[w] for w in dict.fromkeys(favor + avoid)
+            w: WUXING_ATTR[w] for w in dict.fromkeys(favor + partner)
         },
         "disclaimer": "简化五行食养模型，仅供餐饮娱乐参考，非命理排盘、非医疗建议。",
     }
@@ -198,8 +204,10 @@ def _print_report(chart: dict) -> None:
     print(f"日主：{chart['day_master']}（身{chart['strength']}）")
     print("五行：" + "  ".join(f"{w} {c}" for w, c in chart["counts"].items()))
     print(f"宜补（喜用）：{'、'.join(chart['favor'])}")
-    if chart["avoid"]:
-        print(f"慎点（忌）：{'、'.join(chart['avoid'])}")
+    if chart["partner"]:
+        print(f"宜搭档（{chart['resolve']}）：{'、'.join(chart['partner'])}")
+    else:
+        print("五行周全，百味皆宜")
     for w, attr in chart["tips"].items():
         print(f"  {w}: {attr['温']}性 {attr['味']}味 · 吉时 {attr['吉时']}")
     print(chart["disclaimer"])

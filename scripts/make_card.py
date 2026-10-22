@@ -47,11 +47,17 @@ def _pick(items: list, element: str, n: int = 2) -> list:
 
 
 def build_recommendation(chart: dict, menu_items: list) -> dict:
-    favors, avoids = chart["favor"], chart["avoid"]
-    return {
-        "eat": [{"element": w, "items": _pick(menu_items, w)} for w in favors],
-        "avoid": [{"element": w, "items": _pick(menu_items, w, 1)} for w in avoids],
-    }
+    partner = chart.get("partner", [])
+    eat_groups = [{"element": w, "items": _pick(menu_items, w)} for w in chart["favor"]]
+    partner_groups = [{"element": w, "items": _pick(menu_items, w, 1)} for w in partner]
+    # 五行俱全套餐：主角首位 + 搭档首位，合计价（双方都有实价才算）
+    combo = []
+    for grp in eat_groups[:1] + partner_groups[:1]:
+        combo.extend(grp["items"][:1])
+    total = None
+    if combo and all(it.get("price") is not None for it in combo):
+        total = round(sum(it["price"] for it in combo), 1)
+    return {"eat": eat_groups, "partner": partner_groups, "combo": combo, "combo_total": total}
 
 
 def render_card(chart: dict, reco: dict, source: str, name: str = "食客", meta: dict | None = None) -> str:
@@ -79,11 +85,27 @@ def render_card(chart: dict, reco: dict, source: str, name: str = "食客", meta
             f'<p class="slogan">{SLOGAN[w]}</p><ul>{lis}</ul></section>'
         )
 
-    avoid_html = ""
-    for grp in reco["avoid"]:
+    partner_html = ""
+    for grp in reco["partner"]:
         w = grp["element"]
-        its = "".join(f'<b>{it["name"]}</b>' for it in grp["items"]) or ""
-        avoid_html += f'<span class="chip">慎点 {w}：{its or "此类少碰"}</span>'
+        attr = WUXING_ATTR[w]
+        its = "".join(
+            f'<li><b>{it["name"]}</b><span>{fmt_price(it.get("price"))} · {it.get("kcal") or "?"} kcal</span></li>'
+            for it in grp["items"]
+        ) or '<li class="empty">以门店实物为准</li>'
+        partner_html += (
+            f'<section class="eat" style="border-left:4px solid {WUXING_COLOR[w]}">'
+            f'<h3 style="color:{WUXING_COLOR[w]}">宜搭档 · {w} <small>{attr["温"]}性 {attr["味"]}味</small></h3>'
+            f'<p class="slogan">忌神有制化则不忌：与主角同点，五行流通</p><ul>{its}</ul></section>'
+        )
+
+    combo = reco.get("combo") or []
+    combo_line = " + ".join(f'<b>{it["name"]}</b>' for it in combo)
+    combo_total = reco.get("combo_total")
+    combo_html = ""
+    if combo:
+        price_bit = f'<span class="combo-total">参考合计 ¥{combo_total:.1f}</span>' if combo_total is not None else ""
+        combo_html = f'<div class="combo">五行俱全餐：{combo_line}{price_bit}</div>'
 
     favor_names = "、".join(chart["favor"])
     lucky = "、".join(WUXING_ATTR[w]["吉时"] for w in chart["favor"])
@@ -121,6 +143,8 @@ h2{{font-size:14px;margin:14px 0 8px;color:#7a5c1e;border-bottom:1px dashed #e3c
 .eat li{{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-top:1px dotted #eaddb8}}
 .eat li span{{color:#8a7658;font-size:12px}}
 .chip{{display:inline-block;background:#f7e8e8;color:#8a2f2f;border:1px solid #e0b9b9;border-radius:999px;padding:4px 12px;font-size:12px;margin:0 6px 6px 0}}
+.combo{{background:#eef6ea;border:1px dashed #4a8c3f;border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px}}
+.combo-total{{float:right;color:#3b6d11;font-weight:600}}
 .lucky{{background:#fdf4dc;border-radius:10px;padding:10px 14px;font-size:13px;margin-top:10px}}
 .foot{{background:#f6edd8;font-size:11px;color:#9a8a6a;text-align:center;padding:10px 14px;line-height:1.7}}
 </style></head><body>
@@ -133,7 +157,7 @@ h2{{font-size:14px;margin:14px 0 8px;color:#7a5c1e;border-bottom:1px dashed #e3c
   <div class="box">
     <h2>五行分布</h2>{bars}
     <h2>今日宜吃</h2>{eat_html}
-    <h2>今日慎点</h2>{avoid_html or "<span class='chip'>五行周全，百无禁忌</span>"}
+    <h2>今日宜搭档</h2>{partner_html or "<span class='chip'>五行周全，百味皆宜</span>"}{combo_html}
     <div class="lucky">吉时：<b>{lucky}</b><br>{SLOGAN.get(chart["favor"][0], "")}</div>
   </div>
   <div class="foot">数据来源：{src_note}<br>{chart["disclaimer"]}</div>
