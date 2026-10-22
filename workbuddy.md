@@ -22,7 +22,7 @@
 ### 第四轮：待办
 - [ ] 申请 MCP Token 并实测 tools/list、菜单工具字段结构
 - [ ] 更新 MCP_INTEGRATION.md 实测记录
-- [ ] 开源 GitHub 仓库（创建日期须在 2025-12-25 后）
+- [x] 开源 GitHub 仓库：https://github.com/renefire/MD_MCP
 - [ ] 活动页面 Issue 模板报名
 
 <!-- 用 WorkBuddy「导出对话」功能产出完整 MD 后，粘贴替换本节并删除此注释行 -->

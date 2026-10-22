@@ -2,7 +2,7 @@
 
 > 以**真实八字五行算法**替你决定这一顿麦当劳。不是随机抽签——同一生辰、同一天，全世界算出同一个套餐。
 
-🏆 2026 麦当劳程序员创意开发大赛参赛作品（使用 [腾讯 WorkBuddy](https://www.workbuddy.cn) 开发）
+🏆 2026 麦当劳程序员创意开发大赛参赛作品（使用 [腾讯 WorkBuddy](https://www.workbuddy.cn) 开发） · 开源仓库：https://github.com/renefire/MD_MCP
 
 ## 这是什么
 
