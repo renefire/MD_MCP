@@ -1,0 +1,13 @@
+# 凭证与环境（严禁入库）
+.env
+*.env
+!/.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 会话与产物缓存
+.workbuddy/
+*.log
