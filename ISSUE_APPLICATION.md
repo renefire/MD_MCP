@@ -29,6 +29,7 @@
 - [x] README.md（项目介绍/安装/使用示例/目标用户）
 - [x] CONTEST_DECLARATION.md —— **已替换为官方仓库原文，一字未改**（官方要求文件名及内容均不可改动）
 - [x] MCP_INTEGRATION.md（实际用到的 MCP Server/Tool、调用流程、业务价值）
+- [x] mcp-config.example.json（脱敏 MCP 配置示例，仅 ${MCD_MCP_TOKEN} 环境变量占位符，无真实凭证）
 - [x] 源代码（scripts/ + skill/，纯 Python 标准库）
 - [x] workbuddy.md（WorkBuddy 专项奖必需）
 - [x] 仓库 Public 可访问：https://github.com/renefire/MD_MCP

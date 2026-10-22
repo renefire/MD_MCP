@@ -63,8 +63,9 @@ mcd-shiyangju/
 ├── references/
 │   ├── reference_menu.json        # 离线参考菜单（仅降级演示用）
 │   └── mcp_tools.md               # MCP 工具链实测记录
-├── CONTEST_DECLARATION.md         # 参赛声明
+├── CONTEST_DECLARATION.md         # 参赛声明（官方原文）
 ├── MCP_INTEGRATION.md             # MCP 集成说明
+├── mcp-config.example.json        # 脱敏 MCP 配置示例（仅环境变量占位符）
 ├── workbuddy.md                   # WorkBuddy 开发对话导出（专项奖材料）
 └── 示例食养卡.html                 # 开箱即看的演示产物
 ```
